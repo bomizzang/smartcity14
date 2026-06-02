@@ -7,116 +7,125 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg:#0f1117; --panel:#1a1d27; --border:#2a2d3a;
-  --accent:#4ade80; --accent2:#60a5fa; --warn:#fb923c; --danger:#f87171;
-  --text:#e2e8f0; --muted:#64748b; --radius:10px;
+:root{
+  --bg:#0f1117;--panel:#1a1d27;--border:#2a2d3a;
+  --accent:#4ade80;--accent2:#60a5fa;--warn:#fbbf24;--danger:#f87171;
+  --text:#e2e8f0;--muted:#64748b;--radius:10px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden}
 
-header{display:flex;align-items:center;gap:14px;padding:10px 20px;background:var(--panel);border-bottom:1px solid var(--border);z-index:1000;flex-shrink:0}
-.logo{font-size:18px;font-weight:700;letter-spacing:-0.5px}
+header{display:flex;align-items:center;gap:12px;padding:9px 18px;background:var(--panel);border-bottom:1px solid var(--border);z-index:1000;flex-shrink:0}
+.logo{font-size:17px;font-weight:700;letter-spacing:-.5px}
 .logo span{color:var(--accent)}
-.tagline{font-size:11px;color:var(--muted);margin-top:1px}
-
+.tagline{font-size:10px;color:var(--muted);margin-top:1px}
 .mode-tabs{display:flex;gap:6px;margin-left:auto}
-.mode-tab{padding:6px 16px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:inherit;font-size:12px;cursor:pointer;transition:all .2s}
+.mode-tab{padding:5px 14px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:inherit;font-size:12px;cursor:pointer;transition:all .2s}
 .mode-tab.active{background:var(--accent);color:#0f1117;border-color:var(--accent);font-weight:700}
 .mode-tab.active.route{background:var(--accent2);border-color:var(--accent2)}
+.time-btns{display:flex;gap:5px;margin-left:10px}
+.time-btn{padding:4px 11px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:inherit;font-size:11px;cursor:pointer;transition:all .2s}
+.time-btn.active{background:var(--accent);color:#0f1117;border-color:var(--accent);font-weight:700}
 
 .main{display:flex;flex:1;overflow:hidden}
+.side{width:272px;background:var(--panel);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0}
+.side-section{padding:12px 14px;border-bottom:1px solid var(--border)}
+.side-label{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:7px}
+.guide-box{background:rgba(74,222,128,.07);border:1px solid rgba(74,222,128,.2);border-radius:var(--radius);padding:9px 11px;font-size:11.5px;line-height:1.7;color:#a7f3d0}
+.guide-box.blue{background:rgba(96,165,250,.07);border-color:rgba(96,165,250,.2);color:#bfdbfe}
 
-.side{width:280px;background:var(--panel);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0}
-.side-section{padding:14px 16px;border-bottom:1px solid var(--border)}
-.side-label{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
-
-.guide-box{background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.25);border-radius:var(--radius);padding:10px 12px;font-size:12px;line-height:1.7;color:#a7f3d0}
-.guide-box.blue{background:rgba(96,165,250,.08);border-color:rgba(96,165,250,.25);color:#bfdbfe}
-
-/* 15분 결과 패널 */
+/* ── 15분 결과 ── */
 #panel-iso{display:none;flex-direction:column;overflow-y:auto;flex:1}
 #panel-iso.show{display:flex}
-.result-header{padding:14px 16px 10px;border-bottom:1px solid var(--border)}
+.result-header{padding:12px 14px 8px;border-bottom:1px solid var(--border)}
 .result-address{font-size:13px;font-weight:500}
-.result-pnu{font-size:10px;color:var(--muted);margin-top:2px}
-.score-ring-wrap{display:flex;align-items:center;justify-content:center;padding:18px;border-bottom:1px solid var(--border)}
-.score-ring{width:110px;height:110px;position:relative}
-.score-ring svg{transform:rotate(-90deg)}
-.score-val{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:28px;font-weight:700;text-align:center}
-.score-lbl{position:absolute;top:calc(50% + 18px);left:50%;transform:translateX(-50%);font-size:10px;color:var(--muted);white-space:nowrap}
-.fac-list{padding:12px 16px}
-.fac-item{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px}
-.fac-item:last-child{border-bottom:none}
-.fac-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.fac-name{flex:1}
-.fac-val{font-size:11px;font-weight:500}
-.verdict{margin:0 16px 16px;padding:10px 12px;border-radius:var(--radius);font-size:12px;line-height:1.6}
-.verdict.good{background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.3);color:#a7f3d0}
-.verdict.mid{background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.3);color:#fef08a}
-.verdict.bad{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3);color:#fecaca}
+.result-sub{font-size:10px;color:var(--muted);margin-top:2px}
 
-/* 경로 결과 패널 */
+.score-wrap{display:flex;align-items:center;gap:14px;padding:14px;border-bottom:1px solid var(--border)}
+.score-ring{width:88px;height:88px;position:relative;flex-shrink:0}
+.score-ring svg{transform:rotate(-90deg)}
+.score-num{position:absolute;top:50%;left:50%;transform:translate(-50%,-52%);font-size:24px;font-weight:700;text-align:center}
+.score-sub{position:absolute;top:calc(50% + 14px);left:50%;transform:translateX(-50%);font-size:9px;color:var(--muted);white-space:nowrap}
+.score-info{flex:1;font-size:11px;line-height:1.7;color:var(--muted)}
+.score-info strong{color:var(--text);font-weight:500}
+
+.reach-bars{padding:10px 14px;border-bottom:1px solid var(--border)}
+.reach-row{margin-bottom:8px}
+.reach-head{display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px}
+.reach-label{color:var(--muted)}
+.reach-val{font-weight:500}
+.reach-bar-bg{height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+.reach-bar{height:100%;border-radius:3px;transition:width .8s ease}
+
+.formula-box{margin:10px 14px;padding:9px 11px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:var(--radius);font-size:10.5px;line-height:1.8;color:var(--muted)}
+.formula-box code{color:var(--accent2);font-size:10px;background:rgba(96,165,250,.1);padding:1px 4px;border-radius:3px}
+
+.verdict{margin:0 14px 14px;padding:9px 11px;border-radius:var(--radius);font-size:11.5px;line-height:1.6}
+.verdict.good{background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.25);color:#a7f3d0}
+.verdict.mid {background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.25);color:#fef08a}
+.verdict.bad {background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.25);color:#fecaca}
+
+/* ── 최단경로 결과 ── */
 #panel-route{display:none;flex-direction:column;overflow-y:auto;flex:1}
 #panel-route.show{display:flex}
-.step-indicator{display:flex;flex-direction:column;gap:10px;padding:14px 16px;border-bottom:1px solid var(--border)}
-.step-row{display:flex;align-items:center;gap:10px;font-size:12px}
-.step-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;border:2px solid}
-.step-line{width:2px;height:20px;margin-left:5px;background:var(--border)}
+.step-indicator{padding:12px 14px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:8px}
+.step-row{display:flex;align-items:center;gap:9px;font-size:11.5px}
+.step-dot{width:11px;height:11px;border-radius:50%;flex-shrink:0;border:2px solid;transition:background .3s}
+.step-line{width:2px;height:16px;margin-left:4px;background:var(--border)}
 .step-text{color:var(--muted)}
 .step-text.set{color:var(--text);font-weight:500}
-.route-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:14px 16px;border-bottom:1px solid var(--border)}
-.stat-card{background:var(--bg);border-radius:var(--radius);padding:10px;text-align:center}
-.stat-val{font-size:20px;font-weight:700}
-.stat-lbl{font-size:10px;color:var(--muted);margin-top:2px}
-.route-desc{padding:14px 16px;font-size:12px;line-height:1.7;color:var(--muted)}
-.reset-btn{margin:0 16px 16px;padding:8px;border-radius:var(--radius);border:1px solid var(--border);background:transparent;color:var(--muted);font-family:inherit;font-size:12px;cursor:pointer;transition:all .2s}
+
+.transport-cards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;padding:12px 14px;border-bottom:1px solid var(--border)}
+.t-card{background:var(--bg);border-radius:var(--radius);padding:9px 6px;text-align:center;border:1px solid var(--border)}
+.t-icon{font-size:16px;margin-bottom:3px}
+.t-time{font-size:14px;font-weight:700;margin-bottom:1px}
+.t-label{font-size:9px;color:var(--muted)}
+.t-speed{font-size:9px;color:var(--border);margin-top:2px}
+
+.dist-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border);font-size:12px}
+.dist-label{color:var(--muted)}
+.dist-val{font-weight:700;color:var(--accent2)}
+
+.route-note{padding:10px 14px;font-size:11px;line-height:1.7;color:var(--muted)}
+#route-result{display:none}
+.reset-btn{margin:0 14px 14px;padding:7px;border-radius:var(--radius);border:1px solid var(--border);background:transparent;color:var(--muted);font-family:inherit;font-size:11.5px;cursor:pointer;transition:all .2s}
 .reset-btn:hover{background:var(--border);color:var(--text)}
 
-/* 레이어 패널 */
-.layer-panel{position:absolute;top:12px;right:12px;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;z-index:500;font-size:12px}
-.layer-row{display:flex;align-items:center;gap:8px;padding:4px 0;cursor:pointer}
-.layer-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+/* ── 지도 오버레이 ── */
+.layer-panel{position:absolute;top:10px;right:10px;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:9px 12px;z-index:500;font-size:11.5px}
+.layer-row{display:flex;align-items:center;gap:7px;padding:3px 0;cursor:pointer}
+.layer-dot{width:9px;height:9px;border-radius:2px;flex-shrink:0}
 .layer-check{accent-color:var(--accent)}
+.legend{position:absolute;bottom:20px;right:10px;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:9px 12px;z-index:500;font-size:10.5px}
+.legend-title{font-weight:700;margin-bottom:5px;font-size:11.5px}
+.legend-item{display:flex;align-items:center;gap:7px;padding:2px 0;color:var(--muted)}
+.legend-swatch{width:24px;height:4px;border-radius:2px}
 
-/* 범례 */
-.legend{position:absolute;bottom:24px;right:12px;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;z-index:500;font-size:11px}
-.legend-title{font-weight:700;margin-bottom:6px;font-size:12px}
-.legend-item{display:flex;align-items:center;gap:8px;padding:2px 0;color:var(--muted)}
-.legend-swatch{width:28px;height:4px;border-radius:2px}
-
-/* 로딩 */
-#loading{position:fixed;inset:0;background:rgba(15,17,23,.95);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;gap:16px}
-.spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
+/* ── 로딩 ── */
+#loading{position:fixed;inset:0;background:rgba(15,17,23,.95);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;gap:14px}
+.spinner{width:38px;height:38px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-#loading p{font-size:13px;color:var(--muted)}
-#load-detail{font-size:11px;color:#444}
+#loading p{font-size:12px;color:var(--muted)}
 
-.leaflet-tile-pane{filter:brightness(.7) saturate(.8)}
+.leaflet-tile-pane{filter:brightness(.68) saturate(.75)}
 .leaflet-container{background:var(--bg)}
-
-.click-marker{width:16px;height:16px;background:#4ade80;border-radius:50%;border:3px solid white;box-shadow:0 0 0 4px rgba(74,222,128,.3);animation:pulse 1.5s ease infinite}
-.start-marker{width:16px;height:16px;background:#4ade80;border-radius:50%;border:3px solid white;box-shadow:0 0 0 4px rgba(74,222,128,.4)}
-.end-marker{width:16px;height:16px;background:#f87171;border-radius:50%;border:3px solid white;box-shadow:0 0 0 4px rgba(248,113,113,.4)}
-@keyframes pulse{0%,100%{box-shadow:0 0 0 4px rgba(74,222,128,.3)}50%{box-shadow:0 0 0 8px rgba(74,222,128,.1)}}
-
-.time-btns{display:flex;gap:6px;margin-left:12px}
-.time-btn{padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:inherit;font-size:12px;cursor:pointer;transition:all .2s}
-.time-btn.active{background:var(--accent);color:#0f1117;border-color:var(--accent);font-weight:700}
+.click-marker{width:14px;height:14px;background:#4ade80;border-radius:50%;border:2.5px solid white;box-shadow:0 0 0 4px rgba(74,222,128,.3);animation:pulse 1.5s ease infinite}
+.start-marker{width:14px;height:14px;background:#4ade80;border-radius:50%;border:2.5px solid white;box-shadow:0 0 0 3px rgba(74,222,128,.4)}
+.end-marker{width:14px;height:14px;background:#f87171;border-radius:50%;border:2.5px solid white;box-shadow:0 0 0 3px rgba(248,113,113,.4)}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 4px rgba(74,222,128,.3)}50%{box-shadow:0 0 0 7px rgba(74,222,128,.08)}}
 </style>
 </head>
 <body>
 
 <div id="loading">
   <div class="spinner"></div>
-  <p>데이터 불러오는 중...</p>
-  <p class="load-detail" id="load-detail">도로망 · 필지 · 행정경계 초기화</p>
+  <p id="load-detail">데이터 불러오는 중...</p>
 </div>
 
 <header>
   <div>
     <div class="logo">송파구 <span>15분 도시</span> 분석</div>
-    <div class="tagline">OpenStreetMap 도로 네트워크 · 다익스트라 알고리즘</div>
+    <div class="tagline">OSM 도로망 · 다익스트라 · Moreno(2021) 접근성 지표</div>
   </div>
   <div style="display:flex;align-items:center;margin-left:auto;gap:8px">
     <div class="mode-tabs">
@@ -133,45 +142,53 @@ header{display:flex;align-items:center;gap:14px;padding:10px 20px;background:var
 
 <div class="main">
   <div class="side">
-    <!-- 15분 도시 모드 -->
-    <div id="side-iso">
+
+    <!-- 15분 도시 사이드 -->
+    <div id="side-iso" style="display:flex;flex-direction:column;flex:1;overflow:hidden">
       <div class="side-section">
         <div class="side-label">사용 방법</div>
-        <div class="guide-box" id="guide-iso">
-          지도에서 <strong style="color:var(--accent)">필지를 클릭</strong>하면 도보로 도달 가능한 범위를 분석해요.<br><br>
-          상단 버튼으로 <strong style="color:var(--accent)">분석 시간</strong>을 조절할 수 있어요.
-        </div>
+        <div class="guide-box">지도에서 <strong style="color:var(--accent)">필지를 클릭</strong>하면 해당 지점의 도보 접근성을 분석해요.<br>상단 버튼으로 분석 시간을 조절할 수 있어요.</div>
       </div>
       <div id="panel-iso">
         <div class="result-header">
           <div class="result-address" id="iso-address">—</div>
-          <div class="result-pnu" id="iso-pnu">—</div>
+          <div class="result-sub" id="iso-pnu">—</div>
         </div>
-        <div class="score-ring-wrap">
+
+        <div class="score-wrap">
           <div class="score-ring">
-            <svg viewBox="0 0 110 110" width="110" height="110">
-              <circle cx="55" cy="55" r="48" fill="none" stroke="#2a2d3a" stroke-width="8"/>
-              <circle id="score-arc" cx="55" cy="55" r="48" fill="none" stroke="#4ade80" stroke-width="8"
-                stroke-dasharray="301.6" stroke-dashoffset="301.6" stroke-linecap="round"
-                style="transition:stroke-dashoffset .8s ease,stroke .4s"/>
+            <svg viewBox="0 0 88 88" width="88" height="88">
+              <circle cx="44" cy="44" r="38" fill="none" stroke="#2a2d3a" stroke-width="7"/>
+              <circle id="score-arc" cx="44" cy="44" r="38" fill="none" stroke="#4ade80" stroke-width="7"
+                stroke-dasharray="238.76" stroke-dashoffset="238.76" stroke-linecap="round"
+                style="transition:stroke-dashoffset .9s ease,stroke .4s"/>
             </svg>
-            <div class="score-val" id="score-val">—</div>
-            <div class="score-lbl" id="score-lbl">15분 도시 점수</div>
+            <div class="score-num" id="score-num">—</div>
+            <div class="score-sub">/ 100점</div>
           </div>
+          <div class="score-info" id="score-info">클릭하면<br>점수가 계산돼요</div>
         </div>
-        <div class="fac-list" id="fac-list"></div>
+
+        <div class="reach-bars" id="reach-bars"></div>
+        <div class="formula-box" id="formula-box" style="display:none">
+          <strong style="color:var(--text)">📐 점수 산출 기준</strong><br>
+          Moreno et al. (2021) 15분 도시 접근성 지표<br>
+          <code>점수 = (실제도달노드 / 기준노드수) × 100</code><br>
+          기준: 반경 <strong style="color:var(--accent)">1km 원형</strong> 내 이상적 노드 수<br>
+          보행속도 <strong style="color:var(--accent)">4km/h</strong> · 15분 = <strong style="color:var(--accent)">1,000m</strong>
+        </div>
         <div class="verdict" id="verdict"></div>
       </div>
     </div>
 
-    <!-- 최단경로 모드 -->
+    <!-- 최단경로 사이드 -->
     <div id="side-route" style="display:none;flex-direction:column;flex:1;overflow:hidden">
       <div class="side-section">
         <div class="side-label">사용 방법</div>
         <div class="guide-box blue">
-          <strong style="color:#93c5fd">1번째 클릭</strong> → 출발지 설정<br>
-          <strong style="color:#fca5a5">2번째 클릭</strong> → 도착지 설정<br><br>
-          도로 네트워크를 따라 <strong style="color:#bfdbfe">최단 보행 경로</strong>를 찾아줘요.
+          <strong style="color:#93c5fd">1번째 클릭</strong> → 출발지<br>
+          <strong style="color:#fca5a5">2번째 클릭</strong> → 도착지<br>
+          도로 네트워크 기반 <strong style="color:#bfdbfe">최단 경로</strong>를 찾아줘요.
         </div>
       </div>
       <div id="panel-route">
@@ -186,39 +203,55 @@ header{display:flex;align-items:center;gap:14px;padding:10px 20px;background:var
             <span class="step-text" id="txt-end">도착지를 클릭하세요</span>
           </div>
         </div>
-        <div id="route-result" style="display:none">
-          <div class="route-stats">
-            <div class="stat-card">
-              <div class="stat-val" id="route-time" style="color:var(--accent2)">—</div>
-              <div class="stat-lbl">예상 도보 시간</div>
+
+        <div id="route-result">
+          <div class="dist-row">
+            <span class="dist-label">총 거리</span>
+            <span class="dist-val" id="r-dist">—</span>
+          </div>
+          <div class="transport-cards">
+            <div class="t-card">
+              <div class="t-icon">🚶</div>
+              <div class="t-time" id="t-walk" style="color:var(--accent)">—</div>
+              <div class="t-label">도보</div>
+              <div class="t-speed">4 km/h</div>
             </div>
-            <div class="stat-card">
-              <div class="stat-val" id="route-dist" style="color:var(--accent)">—</div>
-              <div class="stat-lbl">총 거리</div>
+            <div class="t-card">
+              <div class="t-icon">🚲</div>
+              <div class="t-time" id="t-bike" style="color:var(--accent2)">—</div>
+              <div class="t-label">자전거</div>
+              <div class="t-speed">15 km/h</div>
+            </div>
+            <div class="t-card">
+              <div class="t-icon">🛴</div>
+              <div class="t-time" id="t-kick" style="color:var(--warn)">—</div>
+              <div class="t-label">킥보드</div>
+              <div class="t-speed">10 km/h</div>
             </div>
           </div>
-          <div class="route-desc" id="route-desc"></div>
+          <div class="route-note" id="route-note"></div>
         </div>
         <button class="reset-btn" onclick="resetRoute()">↺ 경로 초기화</button>
       </div>
     </div>
+
   </div>
 
   <div style="position:relative;flex:1;display:flex">
     <div id="map" style="flex:1"></div>
 
     <div class="layer-panel">
-      <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.08em">레이어</div>
-      <label class="layer-row"><input type="checkbox" class="layer-check" id="toggle-roads" checked><div class="layer-dot" style="background:#60a5fa"></div><span>도로망</span></label>
-      <label class="layer-row"><input type="checkbox" class="layer-check" id="toggle-parcels" checked><div class="layer-dot" style="background:#374151"></div><span>필지 경계</span></label>
-      <label class="layer-row"><input type="checkbox" class="layer-check" id="toggle-dong" checked><div class="layer-dot" style="background:#a78bfa"></div><span>행정동 경계</span></label>
+      <div style="font-size:10px;font-weight:700;color:var(--muted);margin-bottom:7px;text-transform:uppercase;letter-spacing:.08em">레이어</div>
+      <label class="layer-row"><input type="checkbox" class="layer-check" id="tog-roads" checked><div class="layer-dot" style="background:#60a5fa"></div><span>도로망</span></label>
+      <label class="layer-row"><input type="checkbox" class="layer-check" id="tog-parcels" checked><div class="layer-dot" style="background:#374151"></div><span>필지 경계</span></label>
+      <label class="layer-row"><input type="checkbox" class="layer-check" id="tog-dong" checked><div class="layer-dot" style="background:#a78bfa"></div><span>행정동 경계</span></label>
     </div>
 
     <div class="legend" id="iso-legend" style="display:none">
       <div class="legend-title">도달 범위</div>
-      <div class="legend-item"><div class="legend-swatch" style="background:rgba(74,222,128,.8)"></div><span id="leg5">5분 이내</span></div>
-      <div class="legend-item"><div class="legend-swatch" style="background:rgba(251,191,36,.8)"></div><span id="leg10">10분 이내</span></div>
-      <div class="legend-item"><div class="legend-swatch" style="background:rgba(251,146,60,.8)"></div><span id="leg15">15분 이내</span></div>
+      <div class="legend-item"><div class="legend-swatch" style="background:rgba(74,222,128,.85)"></div>5분 이내</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:rgba(251,191,36,.85)"></div>10분 이내</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:rgba(251,146,60,.85)"></div>15분 이내</div>
     </div>
     <div class="legend" id="route-legend" style="display:none">
       <div class="legend-title">최단경로</div>
@@ -231,185 +264,195 @@ header{display:flex;align-items:center;gap:14px;padding:10px 20px;background:var
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-// ═══════════════════════════════════════════
+// ════════════════════════════════════
+//  상수
+// ════════════════════════════════════
+// Moreno(2021) 기준: 도보 4km/h, 15분 = 1000m
+// 1km 반경 원 안에 균등 분포 가정 시 예상 노드 밀도
+// 송파구 전체: 9867노드 / 약 33.9km² → 약 291 노드/km²
+// 1km² 반경(π×1²≈3.14km²) → 기준 노드 수 ≈ 291 × 3.14 ≈ 914
+const BASE_NODES_15MIN = 914;  // 기준 노드 수 (이상적 1km 반경)
+const BASE_NODES_10MIN = Math.round(BASE_NODES_15MIN * (10/15) ** 2); // ≈406
+const BASE_NODES_5MIN  = Math.round(BASE_NODES_15MIN * (5/15)  ** 2); // ≈101
+
+// 수송 속도 (km/h)
+const SPEED = { walk:4, bike:15, kick:10 };
+
+// ════════════════════════════════════
 //  전역 상태
-// ═══════════════════════════════════════════
+// ════════════════════════════════════
 const S = {
-  mode: 'iso',         // 'iso' | 'route'
-  maxMin: 10,
-  graph: null,
-  roadsLayer: null, parcelsLayer: null, dongLayer: null,
-  isoLayers: [], routeLayer: null,
-  clickMarker: null, startMarker: null, endMarker: null,
-  routeStep: 0,        // 0=출발 대기, 1=도착 대기, 2=완료
-  startLatLng: null, endLatLng: null,
+  mode:'iso', maxMin:10, graph:null,
+  roadsL:null, parcelsL:null, dongL:null,
+  isoLayers:[], routeLayer:null,
+  clickM:null, startM:null, endM:null,
+  routeStep:0, startLL:null, endLL:null,
 };
 
-// ═══════════════════════════════════════════
-//  지도 초기화
-// ═══════════════════════════════════════════
-const map = L.map('map', { center:[37.5056,127.1153], zoom:14 });
-L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-  attribution:'© OpenStreetMap contributors © CARTO', subdomains:'abcd', maxZoom:19
+// ════════════════════════════════════
+//  지도
+// ════════════════════════════════════
+const map = L.map('map',{center:[37.5056,127.1153],zoom:14});
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{
+  attribution:'© OpenStreetMap contributors © CARTO',subdomains:'abcd',maxZoom:19
 }).addTo(map);
 
-// ═══════════════════════════════════════════
+// ════════════════════════════════════
 //  데이터 로딩
-// ═══════════════════════════════════════════
-async function loadData() {
-  const det = id => document.getElementById('load-detail').textContent = id;
+// ════════════════════════════════════
+async function loadData(){
+  const det = t => document.getElementById('load-detail').textContent = t;
 
-  det('도로 그래프 로딩 중...');
+  det('도로 그래프 로딩 중... (2.3MB)');
   S.graph = await fetch('road_graph_compact.json').then(r=>r.json());
 
   det('도로망 시각화 중...');
   const roads = await fetch('roads_lite.geojson').then(r=>r.json());
-  S.roadsLayer = L.geoJSON(roads, {
-    style: f => {
-      const hw = f.properties.highway||'';
-      const w = ['primary','secondary','trunk'].includes(hw)?1.5:['tertiary','residential'].includes(hw)?1:0.5;
-      return {color:'#60a5fa',weight:w,opacity:.4};
+  S.roadsL = L.geoJSON(roads,{
+    style:f=>{
+      const hw=f.properties.highway||'';
+      const w=['primary','secondary','trunk'].includes(hw)?1.5:['tertiary','residential'].includes(hw)?1:.5;
+      return{color:'#60a5fa',weight:w,opacity:.35};
     }
   }).addTo(map);
 
-  det('필지 경계 로딩 중...');
+  det('필지 경계 로딩 중... (11MB)');
   const parcels = await fetch('parcels_lite.geojson').then(r=>r.json());
-  S.parcelsLayer = L.geoJSON(parcels, {
-    style:{color:'#4b5563',weight:.5,fillColor:'#1e2433',fillOpacity:.6},
+  S.parcelsL = L.geoJSON(parcels,{
+    style:{color:'#4b5563',weight:.5,fillColor:'#1e2433',fillOpacity:.55},
     onEachFeature:(feat,layer)=>{
-      layer.on('click', e=>{ L.DomEvent.stopPropagation(e); onMapClick(feat,e.latlng); });
-      layer.on('mouseover', e=>e.target.setStyle({fillOpacity:.85,fillColor:'#2d3748'}));
-      layer.on('mouseout',  e=>e.target.setStyle({fillOpacity:.6,fillColor:'#1e2433'}));
+      layer.on('click',e=>{L.DomEvent.stopPropagation(e);onMapClick(feat,e.latlng);});
+      layer.on('mouseover',e=>e.target.setStyle({fillOpacity:.82,fillColor:'#2d3748'}));
+      layer.on('mouseout', e=>e.target.setStyle({fillOpacity:.55,fillColor:'#1e2433'}));
     }
   }).addTo(map);
 
   det('행정동 경계 로딩 중...');
   const dong = await fetch('dong_boundaries.geojson').then(r=>r.json());
-  S.dongLayer = L.geoJSON(dong, {
+  S.dongL = L.geoJSON(dong,{
     style:{color:'#a78bfa',weight:1.5,fillOpacity:0,dashArray:'4,4'},
-    onEachFeature:(feat,layer)=>layer.bindTooltip(feat.properties.EMD_NM,{permanent:false,direction:'center'})
+    onEachFeature:(f,l)=>l.bindTooltip(f.properties.EMD_NM,{permanent:false,direction:'center'})
   }).addTo(map);
 
-  // 지도 빈 클릭도 처리
-  map.on('click', e => onMapClick(null, e.latlng));
-
+  map.on('click',e=>onMapClick(null,e.latlng));
   document.getElementById('loading').style.display='none';
 }
 
-// ═══════════════════════════════════════════
+// ════════════════════════════════════
 //  모드 전환
-// ═══════════════════════════════════════════
-function switchMode(mode) {
-  S.mode = mode;
-  document.getElementById('tab-iso').classList.toggle('active', mode==='iso');
-  document.getElementById('tab-route').classList.toggle('active', mode==='route');
-  document.getElementById('side-iso').style.display = mode==='iso'?'flex':'none';
-  document.getElementById('side-iso').style.flexDirection = 'column';
-  document.getElementById('side-route').style.display = mode==='route'?'flex':'none';
-  document.getElementById('time-btns').style.display = mode==='iso'?'flex':'none';
-  document.getElementById('iso-legend').style.display = 'none';
-  document.getElementById('route-legend').style.display = mode==='route'?'block':'none';
-
-  // 레이어 정리
+// ════════════════════════════════════
+function switchMode(m){
+  S.mode=m;
+  document.getElementById('tab-iso').classList.toggle('active',m==='iso');
+  document.getElementById('tab-route').classList.toggle('active',m==='route');
+  document.getElementById('side-iso').style.display  = m==='iso'?'flex':'none';
+  document.getElementById('side-route').style.display= m==='route'?'flex':'none';
+  document.getElementById('time-btns').style.display = m==='iso'?'flex':'none';
+  document.getElementById('iso-legend').style.display='none';
+  document.getElementById('route-legend').style.display= m==='route'?'block':'none';
   S.isoLayers.forEach(l=>map.removeLayer(l)); S.isoLayers=[];
   if(S.routeLayer){map.removeLayer(S.routeLayer);S.routeLayer=null;}
-  if(S.clickMarker){map.removeLayer(S.clickMarker);S.clickMarker=null;}
-  if(mode==='route') resetRoute();
+  if(S.clickM){map.removeLayer(S.clickM);S.clickM=null;}
+  if(m==='route') resetRoute();
 }
 
-function setTime(btn) {
+function setTime(btn){
   document.querySelectorAll('.time-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  S.maxMin = parseInt(btn.dataset.min);
+  S.maxMin=parseInt(btn.dataset.min);
 }
 
-// ═══════════════════════════════════════════
-//  통합 지도 클릭 핸들러
-// ═══════════════════════════════════════════
-function onMapClick(feat, latlng) {
-  if (!S.graph) return;
-  if (S.mode==='iso') onIsoClick(feat, latlng);
-  else onRouteClick(latlng);
+// ════════════════════════════════════
+//  통합 클릭 핸들러
+// ════════════════════════════════════
+function onMapClick(feat,latlng){
+  if(!S.graph) return;
+  S.mode==='iso' ? onIsoClick(feat,latlng) : onRouteClick(latlng);
 }
 
-// ═══════════════════════════════════════════
-//  다익스트라 (거리/경로 두 버전)
-// ═══════════════════════════════════════════
-function findNearestNode(lat, lng) {
-  let best=null, bestD=Infinity;
-  for (const [k,c] of Object.entries(S.graph.nodes)) {
+// ════════════════════════════════════
+//  다익스트라 (최적화: 1회 실행)
+// ════════════════════════════════════
+function findNearestNode(lat,lng){
+  let best=null,bestD=Infinity;
+  for(const [k,c] of Object.entries(S.graph.nodes)){
     const d=(c[1]-lat)**2+(c[0]-lng)**2;
     if(d<bestD){bestD=d;best=k;}
   }
   return best;
 }
 
-// 등시선용: {key → time}
-function dijkstraReach(startKey, maxMin) {
+// maxMin까지 한 번만 돌림 → {key: time}
+function dijkstraReach(startKey,maxMin){
   const dist={[startKey]:0};
+  // 간단한 우선순위 큐 (배열 기반)
   const pq=[[0,startKey]];
   while(pq.length){
-    pq.sort((a,b)=>a[0]-b[0]);
-    const [d,u]=pq.shift();
-    if(d>maxMin) break;
-    if(d>dist[u]) continue;
+    // 최솟값 추출 (성능: 작은 큐에서는 충분)
+    let mi=0;
+    for(let i=1;i<pq.length;i++) if(pq[i][0]<pq[mi][0]) mi=i;
+    const [d,u]=pq.splice(mi,1)[0];
+    if(d>maxMin) continue;
+    if(dist[u]!==undefined&&d>dist[u]) continue;
     for(const [v,t] of (S.graph.edges[u]||[])){
       const nd=d+t;
-      if(nd<=maxMin&&(dist[v]===undefined||nd<dist[v])){dist[v]=nd;pq.push([nd,v]);}
+      if(nd<=maxMin&&(dist[v]===undefined||nd<dist[v])){
+        dist[v]=nd; pq.push([nd,v]);
+      }
     }
   }
   return dist;
 }
 
-// 경로용: {key → {dist, prev}} + 경로 복원
-function dijkstraPath(startKey, endKey) {
-  const dist={[startKey]:0}, prev={};
+// 경로 추적용 다익스트라
+function dijkstraPath(sk,ek){
+  const dist={[sk]:0},prev={};
   const visited=new Set();
-  const pq=[[0,startKey]];
+  const pq=[[0,sk]];
   while(pq.length){
-    pq.sort((a,b)=>a[0]-b[0]);
-    const [d,u]=pq.shift();
+    let mi=0;
+    for(let i=1;i<pq.length;i++) if(pq[i][0]<pq[mi][0]) mi=i;
+    const [d,u]=pq.splice(mi,1)[0];
     if(visited.has(u)) continue;
     visited.add(u);
-    if(u===endKey) break;
+    if(u===ek) break;
     for(const [v,t] of (S.graph.edges[u]||[])){
       const nd=d+t;
       if(dist[v]===undefined||nd<dist[v]){dist[v]=nd;prev[v]=u;pq.push([nd,v]);}
     }
   }
-  if(dist[endKey]===undefined) return null;
-
-  // 경로 복원
-  const path=[];
-  let cur=endKey;
+  if(dist[ek]===undefined) return null;
+  const path=[];let cur=ek;
   while(cur){path.unshift(cur);cur=prev[cur];}
-  return {timMin:dist[endKey], path};
+  return{timMin:dist[ek],path};
 }
 
-// ═══════════════════════════════════════════
-//  15분 도시 모드
-// ═══════════════════════════════════════════
-function onIsoClick(feat, latlng) {
+// ════════════════════════════════════
+//  15분 도시 분석
+// ════════════════════════════════════
+function onIsoClick(feat,latlng){
+  // 이전 레이어 제거
   S.isoLayers.forEach(l=>map.removeLayer(l)); S.isoLayers=[];
-  if(S.clickMarker){map.removeLayer(S.clickMarker);}
+  if(S.clickM) map.removeLayer(S.clickM);
 
-  const startKey = findNearestNode(latlng.lat, latlng.lng);
-  if(!startKey) return;
+  const sk=findNearestNode(latlng.lat,latlng.lng);
+  if(!sk) return;
 
+  // 다익스트라 1회 (15분까지) → 5/10/15분 동시 처리
+  const reached15=dijkstraReach(sk,15);
+  const r5 =Object.entries(reached15).filter(([,t])=>t<=5).length;
+  const r10=Object.entries(reached15).filter(([,t])=>t<=10).length;
+  const r15=Object.keys(reached15).length;
+
+  // ── 등시선 그리기 ──
   const steps=[
-    {min:15,fill:'rgba(251,146,60,.22)',stroke:'rgba(251,146,60,.7)'},
-    {min:10,fill:'rgba(251,191,36,.28)',stroke:'rgba(251,191,36,.8)'},
-    {min:5, fill:'rgba(74,222,128,.35)',stroke:'rgba(74,222,128,.9)'},
+    {nodes:Object.entries(reached15).filter(([,t])=>t<=15).map(([k])=>k), fill:'rgba(251,146,60,.2)', stroke:'rgba(251,146,60,.65)'},
+    {nodes:Object.entries(reached15).filter(([,t])=>t<=10).map(([k])=>k), fill:'rgba(251,191,36,.25)',stroke:'rgba(251,191,36,.75)'},
+    {nodes:Object.entries(reached15).filter(([,t])=>t<=5 ).map(([k])=>k), fill:'rgba(74,222,128,.32)', stroke:'rgba(74,222,128,.9)'},
   ];
-
-  let reachable15={};
   steps.forEach(step=>{
-    const reached=dijkstraReach(startKey,step.min);
-    if(step.min===15) reachable15=reached;
-    const pts=Object.keys(reached).map(k=>{
-      const c=S.graph.nodes[k]; return[c[1],c[0]];
-    });
-    if(pts.length<3) return;
+    if(step.nodes.length<3) return;
+    const pts=step.nodes.map(k=>{const c=S.graph.nodes[k];return[c[1],c[0]];});
     const cx=pts.reduce((s,p)=>s+p[1],0)/pts.length;
     const cy=pts.reduce((s,p)=>s+p[0],0)/pts.length;
     const sorted=pts.slice().sort((a,b)=>Math.atan2(a[0]-cy,a[1]-cx)-Math.atan2(b[0]-cy,b[1]-cx));
@@ -417,172 +460,187 @@ function onIsoClick(feat, latlng) {
       const dl=p[0]-cy,dn=p[1]-cx,d=Math.sqrt(dl*dl+dn*dn)||1;
       return[p[0]+dl/d*.0009,p[1]+dn/d*.0009];
     });
-    const layer=L.polygon(exp,{color:step.stroke,weight:1.5,fillColor:step.fill,fillOpacity:1,smoothFactor:2}).addTo(map);
-    S.isoLayers.push(layer);
+    const l=L.polygon(exp,{color:step.stroke,weight:1.5,fillColor:step.fill,fillOpacity:1,smoothFactor:2}).addTo(map);
+    S.isoLayers.push(l);
   });
 
-  const icon=L.divIcon({className:'',html:'<div class="click-marker"></div>',iconSize:[16,16],iconAnchor:[8,8]});
-  S.clickMarker=L.marker([latlng.lat,latlng.lng],{icon}).addTo(map);
-  S.isoLayers.push(S.clickMarker);
-
+  const icon=L.divIcon({className:'',html:'<div class="click-marker"></div>',iconSize:[14,14],iconAnchor:[7,7]});
+  S.clickM=L.marker([latlng.lat,latlng.lng],{icon}).addTo(map);
+  S.isoLayers.push(S.clickM);
   document.getElementById('iso-legend').style.display='block';
+
+  // ── 점수 계산 (Moreno 2021 기반) ──
+  // 점수 = (실제 도달 노드 수 / 기준 노드 수) × 100, 최대 100
+  const score15 = Math.min(Math.round((r15 / BASE_NODES_15MIN) * 100), 100);
+  const score10 = Math.min(Math.round((r10 / BASE_NODES_10MIN) * 100), 100);
+  const score5  = Math.min(Math.round((r5  / BASE_NODES_5MIN)  * 100), 100);
+  // 가중 평균: 15분 50%, 10분 30%, 5분 20%
+  const finalScore = Math.round(score15*0.5 + score10*0.3 + score5*0.2);
+
+  // ── 사이드패널 업데이트 ──
+  const props=feat?feat.properties:{};
+  document.getElementById('iso-address').textContent=props.jibun?`송파구 ${props.jibun}`:'송파구 (도로/공지)';
+  document.getElementById('iso-pnu').textContent=props.pnu?`PNU: ${props.pnu}`:'좌표: '+latlng.lat.toFixed(4)+', '+latlng.lng.toFixed(4);
   document.getElementById('panel-iso').classList.add('show');
 
-  // 사이드패널 업데이트
-  const props=feat?feat.properties:{};
-  document.getElementById('iso-address').textContent=props.jibun?`송파구 ${props.jibun}`:'송파구 (도로)';
-  document.getElementById('iso-pnu').textContent=props.pnu?`PNU: ${props.pnu}`:'지번 정보 없음';
-
-  const r5=Object.keys(dijkstraReach(startKey,5)).length;
-  const r10=Object.keys(dijkstraReach(startKey,10)).length;
-  const r15=Object.keys(reachable15).length;
-  const total=Object.keys(S.graph.nodes).length;
-  const score=Math.min(Math.round(30+(r15/total)*130),100);
-
-  document.getElementById('score-val').textContent=score;
-  document.getElementById('score-lbl').textContent=`${S.maxMin}분 도시 점수`;
+  // 점수 링
+  document.getElementById('score-num').textContent=finalScore;
   const arc=document.getElementById('score-arc');
-  arc.style.strokeDashoffset=301.6-(301.6*score/100);
-  arc.style.stroke=score>=70?'#4ade80':score>=50?'#fbbf24':'#f87171';
+  const C=238.76;
+  arc.style.strokeDashoffset=C-(C*finalScore/100);
+  arc.style.stroke=finalScore>=70?'#4ade80':finalScore>=50?'#fbbf24':'#f87171';
+  document.getElementById('score-info').innerHTML=
+    `<strong>${finalScore}점</strong> (${finalScore>=70?'우수':finalScore>=50?'보통':'개선필요'})<br>
+     5분: <strong style="color:#4ade80">${score5}점</strong> &nbsp;
+     10분: <strong style="color:#fbbf24">${score10}점</strong> &nbsp;
+     15분: <strong style="color:#fb923c">${score15}점</strong>`;
 
-  document.getElementById('fac-list').innerHTML=[
-    {name:'5분 도달 범위',  color:'#4ade80', val:`${r5.toLocaleString()}개 교차점`},
-    {name:'10분 도달 범위', color:'#fbbf24', val:`${r10.toLocaleString()}개 교차점`},
-    {name:'15분 도달 범위', color:'#fb923c', val:`${r15.toLocaleString()}개 교차점`},
-  ].map(f=>`<div class="fac-item">
-    <div class="fac-dot" style="background:${f.color}"></div>
-    <span class="fac-name">${f.name}</span>
-    <span class="fac-val" style="color:${f.color}">${f.val}</span>
-  </div>`).join('');
+  // 도달 범위 바
+  document.getElementById('reach-bars').innerHTML=[
+    {label:'5분 도달',  color:'#4ade80', val:r5,  base:BASE_NODES_5MIN,  score:score5},
+    {label:'10분 도달', color:'#fbbf24', val:r10, base:BASE_NODES_10MIN, score:score10},
+    {label:'15분 도달', color:'#fb923c', val:r15, base:BASE_NODES_15MIN, score:score15},
+  ].map(b=>`
+    <div class="reach-row">
+      <div class="reach-head">
+        <span class="reach-label">${b.label} (기준 ${b.base}개)</span>
+        <span class="reach-val" style="color:${b.color}">${b.val.toLocaleString()}개 · ${b.score}점</span>
+      </div>
+      <div class="reach-bar-bg">
+        <div class="reach-bar" style="width:${Math.min(b.val/b.base*100,100).toFixed(1)}%;background:${b.color}"></div>
+      </div>
+    </div>`).join('');
 
+  document.getElementById('formula-box').style.display='block';
+
+  // 판정
   const v=document.getElementById('verdict');
-  if(score>=70){v.className='verdict good';v.textContent='✅ 15분 도시 관점에서 우수한 지점이에요. 도로 연결성이 높아 도보 접근성이 좋습니다.';}
-  else if(score>=50){v.className='verdict mid';v.textContent='⚠️ 보통 수준의 접근성이에요. 일부 방향으로 도보 이동이 제한될 수 있습니다.';}
-  else{v.className='verdict bad';v.textContent='❌ 15분 도시 관점에서 개선이 필요한 지점이에요. 도로 연결성이 낮습니다.';}
+  if(finalScore>=70){v.className='verdict good';v.textContent='✅ 15분 도시 기준 우수해요. 도보로 넓은 범위에 접근 가능합니다.';}
+  else if(finalScore>=50){v.className='verdict mid';v.textContent='⚠️ 보통 수준이에요. 일부 방향으로 도보 접근이 제한됩니다.';}
+  else if(finalScore>=30){v.className='verdict bad';v.textContent='❌ 접근성 개선이 필요해요. 도로 연결성이 낮은 지역입니다.';}
+  else{v.className='verdict bad';v.textContent='❌ 매우 낮은 접근성이에요. 주거지와 멀거나 도로망이 단절된 지역입니다.';}
 }
 
-// ═══════════════════════════════════════════
-//  최단경로 모드
-// ═══════════════════════════════════════════
-function onRouteClick(latlng) {
+// ════════════════════════════════════
+//  최단경로
+// ════════════════════════════════════
+function fmt(min){
+  if(min<1) return Math.round(min*60)+'초';
+  if(min<60) return Math.ceil(min)+'분';
+  return Math.floor(min/60)+'시간 '+Math.round(min%60)+'분';
+}
+
+function onRouteClick(latlng){
   if(S.routeStep===0){
-    // 출발지 설정
-    if(S.startMarker){map.removeLayer(S.startMarker);}
-    if(S.endMarker){map.removeLayer(S.endMarker);S.endMarker=null;}
+    if(S.startM) map.removeLayer(S.startM);
+    if(S.endM){map.removeLayer(S.endM);S.endM=null;}
     if(S.routeLayer){map.removeLayer(S.routeLayer);S.routeLayer=null;}
     document.getElementById('route-result').style.display='none';
 
-    S.startLatLng=latlng;
-    const icon=L.divIcon({className:'',html:'<div class="start-marker"></div>',iconSize:[16,16],iconAnchor:[8,8]});
-    S.startMarker=L.marker([latlng.lat,latlng.lng],{icon}).addTo(map);
-    S.startMarker.bindPopup('<b style="color:#4ade80">출발지</b>').openPopup();
+    S.startLL=latlng;
+    const icon=L.divIcon({className:'',html:'<div class="start-marker"></div>',iconSize:[14,14],iconAnchor:[7,7]});
+    S.startM=L.marker([latlng.lat,latlng.lng],{icon}).addTo(map);
+    S.startM.bindPopup('<b style="color:#4ade80">출발지</b>').openPopup();
 
     document.getElementById('dot-start').style.background='#4ade80';
-    document.getElementById('txt-start').textContent=`출발지 설정됨 (${latlng.lat.toFixed(4)}, ${latlng.lng.toFixed(4)})`;
+    document.getElementById('txt-start').textContent='출발지 설정됨';
     document.getElementById('txt-start').classList.add('set');
     document.getElementById('txt-end').textContent='도착지를 클릭하세요';
     document.getElementById('txt-end').classList.remove('set');
     document.getElementById('dot-end').style.background='transparent';
-
     S.routeStep=1;
 
   } else if(S.routeStep===1){
-    // 도착지 설정 + 경로 계산
-    S.endLatLng=latlng;
-    const icon=L.divIcon({className:'',html:'<div class="end-marker"></div>',iconSize:[16,16],iconAnchor:[8,8]});
-    S.endMarker=L.marker([latlng.lat,latlng.lng],{icon}).addTo(map);
-    S.endMarker.bindPopup('<b style="color:#f87171">도착지</b>').openPopup();
-
+    S.endLL=latlng;
+    const icon=L.divIcon({className:'',html:'<div class="end-marker"></div>',iconSize:[14,14],iconAnchor:[7,7]});
+    S.endM=L.marker([latlng.lat,latlng.lng],{icon}).addTo(map);
+    S.endM.bindPopup('<b style="color:#f87171">도착지</b>').openPopup();
     document.getElementById('dot-end').style.background='#f87171';
-    document.getElementById('txt-end').textContent=`도착지 설정됨 (${latlng.lat.toFixed(4)}, ${latlng.lng.toFixed(4)})`;
+    document.getElementById('txt-end').textContent='도착지 설정됨';
     document.getElementById('txt-end').classList.add('set');
-
     calcRoute();
     S.routeStep=2;
 
   } else {
-    // 완료 상태 → 출발지 재설정
-    resetRoute();
-    onRouteClick(latlng);
+    resetRoute(); onRouteClick(latlng);
   }
 }
 
-function calcRoute() {
-  const sk=findNearestNode(S.startLatLng.lat,S.startLatLng.lng);
-  const ek=findNearestNode(S.endLatLng.lat,S.endLatLng.lng);
-  if(!sk||!ek){showRouteError('노드를 찾을 수 없어요.'); return;}
+function calcRoute(){
+  const sk=findNearestNode(S.startLL.lat,S.startLL.lng);
+  const ek=findNearestNode(S.endLL.lat,S.endLL.lng);
+  if(!sk||!ek) return;
 
-  const result=dijkstraPath(sk,ek);
-  if(!result){showRouteError('경로를 찾을 수 없어요. 다른 위치를 시도해보세요.'); return;}
-
-  const {timMin,path}=result;
-
-  // 경로 좌표 변환
-  const latlngs=path.map(k=>{const c=S.graph.nodes[k];return[c[1],c[0]];});
-
-  // 거리 계산 (m)
-  let distM=0;
-  for(let i=0;i<latlngs.length-1;i++){
-    const [la1,lo1]=latlngs[i],[la2,lo2]=latlngs[i+1];
-    const R=6371000,dLat=(la2-la1)*Math.PI/180,dLon=(lo2-lo1)*Math.PI/180;
-    const a=Math.sin(dLat/2)**2+Math.cos(la1*Math.PI/180)*Math.cos(la2*Math.PI/180)*Math.sin(dLon/2)**2;
-    distM+=R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+  const res=dijkstraPath(sk,ek);
+  if(!res){
+    document.getElementById('route-result').style.display='block';
+    document.getElementById('route-note').textContent='경로를 찾을 수 없어요. 다른 위치를 시도해보세요.';
+    return;
   }
 
+  const {timMin,path}=res;
+  const lls=path.map(k=>{const c=S.graph.nodes[k];return[c[1],c[0]];});
+
+  // 실제 거리 계산 (Haversine)
+  let distM=0;
+  for(let i=0;i<lls.length-1;i++){
+    const[la1,lo1]=lls[i],[la2,lo2]=lls[i+1];
+    const R=6371000,φ1=la1*Math.PI/180,φ2=la2*Math.PI/180;
+    const Δφ=(la2-la1)*Math.PI/180,Δλ=(lo2-lo1)*Math.PI/180;
+    const a=Math.sin(Δφ/2)**2+Math.cos(φ1)*Math.cos(φ2)*Math.sin(Δλ/2)**2;
+    distM+=R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+  }
+  const distKm=distM/1000;
+
   if(S.routeLayer) map.removeLayer(S.routeLayer);
-  S.routeLayer=L.polyline(latlngs,{color:'#60a5fa',weight:4,opacity:.9,dashArray:null}).addTo(map);
-  map.fitBounds(S.routeLayer.getBounds(),{padding:[40,40]});
+  S.routeLayer=L.polyline(lls,{color:'#60a5fa',weight:4,opacity:.9}).addTo(map);
+  map.fitBounds(S.routeLayer.getBounds(),{padding:[50,50]});
 
   document.getElementById('route-legend').style.display='block';
   document.getElementById('route-result').style.display='block';
 
-  const tMin=Math.ceil(timMin);
-  const tSec=Math.round(timMin*60);
-  document.getElementById('route-time').textContent=tMin<1?`${tSec}초`:tMin>=60?`${Math.floor(tMin/60)}시간 ${tMin%60}분`:`${tMin}분`;
-  document.getElementById('route-dist').textContent=distM>=1000?`${(distM/1000).toFixed(1)}km`:`${Math.round(distM)}m`;
+  // 거리
+  document.getElementById('r-dist').textContent=
+    distM>=1000?`${distKm.toFixed(2)}km`:`${Math.round(distM)}m`;
 
-  const walkMin=Math.ceil(distM/1000/4*60);
-  document.getElementById('route-desc').innerHTML=
-    `총 <strong style="color:var(--accent2)">${path.length}개</strong> 도로 구간을 경유해요.<br>
-     보행 속도 4km/h 기준 약 <strong style="color:var(--accent)">${walkMin}분</strong> 소요 예상이에요.<br><br>
-     <span style="color:var(--muted)">도착지를 다시 클릭하면 새 경로를 탐색해요.</span>`;
+  // 교통수단별 시간
+  document.getElementById('t-walk').textContent=fmt(distKm/SPEED.walk*60);
+  document.getElementById('t-bike').textContent=fmt(distKm/SPEED.bike*60);
+  document.getElementById('t-kick').textContent=fmt(distKm/SPEED.kick*60);
+
+  document.getElementById('route-note').innerHTML=
+    `경유 구간: <strong style="color:var(--accent2)">${path.length}개</strong><br>
+     기준 속도: 도보 4km/h · 자전거 15km/h · 킥보드 10km/h<br>
+     <span style="color:var(--muted);font-size:10px">지도를 클릭하면 새 경로를 탐색해요.</span>`;
 }
 
-function showRouteError(msg) {
-  document.getElementById('route-result').style.display='block';
-  document.getElementById('route-time').textContent='—';
-  document.getElementById('route-dist').textContent='—';
-  document.getElementById('route-desc').textContent=msg;
-}
-
-function resetRoute() {
-  if(S.startMarker){map.removeLayer(S.startMarker);S.startMarker=null;}
-  if(S.endMarker){map.removeLayer(S.endMarker);S.endMarker=null;}
+function resetRoute(){
+  if(S.startM){map.removeLayer(S.startM);S.startM=null;}
+  if(S.endM){map.removeLayer(S.endM);S.endM=null;}
   if(S.routeLayer){map.removeLayer(S.routeLayer);S.routeLayer=null;}
-  S.routeStep=0; S.startLatLng=null; S.endLatLng=null;
+  S.routeStep=0;S.startLL=null;S.endLL=null;
   document.getElementById('route-result').style.display='none';
   document.getElementById('route-legend').style.display='none';
-  document.getElementById('dot-start').style.background='transparent';
-  document.getElementById('dot-end').style.background='transparent';
+  ['dot-start','dot-end'].forEach(id=>document.getElementById(id).style.background='transparent');
   document.getElementById('txt-start').textContent='출발지를 클릭하세요';
   document.getElementById('txt-end').textContent='도착지를 클릭하세요';
   document.getElementById('txt-start').classList.remove('set');
   document.getElementById('txt-end').classList.remove('set');
 }
 
-// ═══════════════════════════════════════════
+// ════════════════════════════════════
 //  레이어 토글
-// ═══════════════════════════════════════════
-document.getElementById('toggle-roads').addEventListener('change',e=>
-  e.target.checked?map.addLayer(S.roadsLayer):map.removeLayer(S.roadsLayer));
-document.getElementById('toggle-parcels').addEventListener('change',e=>
-  e.target.checked?map.addLayer(S.parcelsLayer):map.removeLayer(S.parcelsLayer));
-document.getElementById('toggle-dong').addEventListener('change',e=>
-  e.target.checked?map.addLayer(S.dongLayer):map.removeLayer(S.dongLayer));
+// ════════════════════════════════════
+document.getElementById('tog-roads').addEventListener('change',e=>
+  e.target.checked?map.addLayer(S.roadsL):map.removeLayer(S.roadsL));
+document.getElementById('tog-parcels').addEventListener('change',e=>
+  e.target.checked?map.addLayer(S.parcelsL):map.removeLayer(S.parcelsL));
+document.getElementById('tog-dong').addEventListener('change',e=>
+  e.target.checked?map.addLayer(S.dongL):map.removeLayer(S.dongL));
 
-// ═══════════════════════════════════════════
+// ════════════════════════════════════
 //  시작
-// ═══════════════════════════════════════════
+// ════════════════════════════════════
 loadData().catch(err=>{
   document.getElementById('load-detail').textContent='오류: '+err.message;
   console.error(err);
